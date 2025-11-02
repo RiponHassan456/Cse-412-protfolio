@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --gray: #6c757d;
+            --border-radius: 8px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--secondary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin: 15px 0;
+            color: var(--primary);
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-section, .preview-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .preview-section {
+            position: sticky;
+            top: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .button-group .btn {
+            flex: 1;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            display: block;
+            padding: 12px;
+            background: #f8f9fa;
+            border: 2px dashed #ddd;
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload-label:hover {
+            border-color: var(--primary);
+            background: #e9ecef;
+        }
+
+        .file-upload-label.has-file {
+            border-color: var(--success);
+            background: rgba(76, 201, 240, 0.1);
+        }
+
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+            border-radius: var(--border-radius);
+            display: none;
+        }
+
+        .portfolio-preview {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .portfolio-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 30px;
+            border: 5px solid var(--primary);
+        }
+
+        .profile-info h2 {
+            border: none;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+
+        .profile-info p {
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .skill-tag {
+            background: var(--primary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .experience-item, .education-item, .project-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .experience-item:last-child, .education-item:last-child, .project-item:last-child {
+            border-bottom: none;
+        }
+
+        .experience-header, .education-header, .project-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .company, .institute, .project-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .duration, .year {
+            color: var(--gray);
+            font-style: italic;
+        }
+
+        .responsibilities, .description {
+            padding-left: 20px;
+        }
+
+        .responsibilities li, .description li {
+            margin-bottom: 5px;
+        }
+
+        .optional-section {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary);
+        }
+
+        .add-btn {
+            background: var(--success);
+            margin-top: 10px;
+        }
+
+        .remove-btn {
+            background: #f72585;
+            margin-top: 10px;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .progress-container {
+            margin-bottom: 20px;
+            background: #f1f3f9;
+            border-radius: var(--border-radius);
+            padding: 15px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .completion-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        @media (max-width: 768px) {
+            .portfolio-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-picture {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            
+            .experience-header, .education-header, .project-header {
+                flex-direction: column;
+            }
+            
+            .duration, .year {
+                margin-top: 5px;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1;
+                min-width: 120px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Portfolio Generator</h1>
+            <p>Create your professional portfolio in minutes</p>
+        </header>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="progress-text" id="progress-text">0% Complete</div>
+            <div class="completion-indicator">
+                <span>Start</span>
+                <span>Skills</span>
+                <span>Education</span>
+                <span>Experience</span>
+                <span>Complete</span>
+            </div>
+        </div>
+
+        <div class="app-container">
+            <div class="form-section">
+                <div class="tabs">
+                    <div class="tab active" data-tab="personal">Personal Info</div>
+                    <div class="tab" data-tab="skills">Skills</div>
+                    <div class="tab" data-tab="education">Education</div>
+                    <div class="tab" data-tab="experience">Experience</div>
+                    <div class="tab" data-tab="projects">Projects</div>
+                </div>
+
+                <form id="portfolio-form">
+                    <!-- Personal Information Tab -->
+                    <div id="personal-tab" class="tab-content active">
+                        <h2>Personal Information</h2>
+                        <div class="form-group">
+                            <label for="full-name">Full Name</label>
+                            <input type="text" id="full-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email-contact">Contact Email</label>
+                            <input type="email" id="email-contact" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="linkedin">LinkedIn Profile</label>
+                            <input type="url" id="linkedin">
+                        </div>
+                        <div class="form-group">
+                            <label for="photo">Profile Photo</label>
+                            <div class="file-upload">
+                                <input type="file" id="photo" class="file-upload-input" accept="image/*">
+                                <label for="photo" class="file-upload-label" id="photo-label">
+                                    Click to upload a profile photo (JPG/PNG)
+                                </label>
+                            </div>
+                            <img id="photo-preview" class="preview-image" alt="Profile photo preview">
+                        </div>
+                        <div class="form-group">
+                            <label for="bio">Short Bio</label>
+                            <textarea id="bio" required></textarea>
+                        </div>
+                        <div class="button-group">
+                            <button type="button" class="btn next-tab" data-next="skills">Next: Skills</button>
+                        </div>
+                    </div>
+
+                    <!-- Skills Tab -->
+                    <div id="skills-tab" class="tab-content">
+                        <h2>Skills</h2>
+                        <div class="form-group">
+                            <label for="soft-skills">Soft Skills (comma separated)</label>
+                            <input type="text" id="soft-skills" placeholder="Communication, Teamwork, Problem-solving">
+                        </div>
+                        <div class="form-group">
+                            <label for="technical-skills">Technical Skills (comma separated)</label>
+                            <input type="text" id="technical-skills" placeholder="JavaScript, HTML, CSS, Python">
+                        </div>
+                        <div class="button-group">
+                            <button type="button" class="btn prev-tab" data-prev="personal">Previous</button>
+                            <button type="button" class="btn next-tab" data-next="education">Next: Education</button>
+                        </div>
+                    </div>
+
+                    <!-- Education Tab -->
+                    <div id="education-tab" class="tab-content">
+                        <h2>Education</h2>
+                        <div id="education-container">
+                            <div class="education-item">
+                                <div class="form-group">
+                                    <label>Institute Name</label>
+                                    <input type="text" class="institute">
+                                </div>
+                                <div class="form-group">
+                                    <label>Degree</label>
+                                    <input type="text" class="degree">
+                                </div>
+                                <div class="form-group">
+                                    <label>Year</label>
+                                    <input type="text" class="year">
+                                </div>
+                                <div class="form-group">
+                                    <label>Grade/GPA</label>
+                                    <input type="text" class="grade">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn add-btn" id="add-education">Add Another Education</button>
+                        <div class="button-group">
+                            <button type="button" class="btn prev-tab" data-prev="skills">Previous</button>
+                            <button type="button" class="btn next-tab" data-next="experience">Next: Experience</button>
+                        </div>
+                    </div>
+
+                    <!-- Experience Tab -->
+                    <div id="experience-tab" class="tab-content">
+                        <h2>Work Experience</h2>
+                        <div id="experience-container">
+                            <div class="experience-item">
+                                <div class="form-group">
+                                    <label>Company Name</label>
+                                    <input type="text" class="company">
+                                </div>
+                                <div class="form-group">
+                                    <label>Job Duration</label>
+                                    <input type="text" class="job-duration" placeholder="e.g., Jan 2020 - Present">
+                                </div>
+                                <div class="form-group">
+                                    <label>Job Responsibilities (one per line)</label>
+                                    <textarea class="responsibilities-text"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn add-btn" id="add-experience">Add Another Experience</button>
+                        <div class="button-group">
+                            <button type="button" class="btn prev-tab" data-prev="education">Previous</button>
+                            <button type="button" class="btn next-tab" data-next="projects">Next: Projects</button>
+                        </div>
+                    </div>
+
+                    <!-- Projects Tab -->
+                    <div id="projects-tab" class="tab-content">
+                        <h2>Projects & Publications</h2>
+                        <p class="optional-section">This section is optional. You can add your projects or publications here.</p>
+                        <div id="projects-container">
+                            <div class="project-item">
+                                <div class="form-group">
+                                    <label>Project/Publication Name</label>
+                                    <input type="text" class="project-name">
+                                </div>
+                                <div class="form-group">
+                                    <label>Description (one point per line)</label>
+                                    <textarea class="project-description"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn add-btn" id="add-project">Add Another Project</button>
+                        <div class="button-group">
+                            <button type="button" class="btn prev-tab" data-prev="experience">Previous</button>
+                            <button type="button" class="btn btn-success" id="generate-pdf">Generate Portfolio</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="preview-section">
+                <h2>Portfolio Preview</h2>
+                <p style="text-align: center; margin-bottom: 20px; color: var(--gray);">
+                    Your portfolio updates in real-time as you fill out the form
+                </p>
+                <div class="button-group">
+                    <button type="button" class="btn" id="print-portfolio">Print Portfolio</button>
+                </div>
+                <div id="portfolio-preview" class="portfolio-preview">
+                    <div class="portfolio-header">
+                        <img src="https://via.placeholder.com/150" alt="Profile Photo" class="profile-picture">
+                        <div class="profile-info">
+                            <h2>Your Name</h2>
+                            <p>Your bio will appear here. Write a short introduction about yourself, your professional background, and career goals.</p>
+                            <p><strong>Email:</strong> your.email@example.com</p>
+                            <p><strong>Phone:</strong> Not provided</p>
+                            <p><strong>LinkedIn:</strong> Not provided</p>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>Skills</h3>
+                        <p>Add your skills in the Skills tab to see them here.</p>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>Education</h3>
+                        <p>Add your education details in the Education tab to see them here.</p>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>Work Experience</h3>
+                        <p>Add your work experience in the Experience tab to see them here.</p>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>Projects & Publications</h3>
+                        <p>Add your projects or publications in the Projects tab to see them here.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const photoInput = document.getElementById('photo');
+        const photoLabel = document.getElementById('photo-label');
+        const photoPreview = document.getElementById('photo-preview');
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        let uploadedPhoto = null;
+
+        // Progress tracking
+        function updateProgress() {
+            const formFields = document.querySelectorAll('#portfolio-form input, #portfolio-form textarea');
+            let filled = 0;
+            formFields.forEach(field => {
+                if (field.value.trim() !== '') filled++;
+            });
+            
+            const percent = Math.round((filled / formFields.length) * 100);
+            progressFill.style.width = `${percent}%`;
+            progressText.textContent = `${percent}% Complete`;
+        }
+
+        // Tab navigation
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+                
+                // Update active tab
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show active tab content
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === `${tabId}-tab`) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        // Next/Previous buttons
+        document.querySelectorAll('.next-tab').forEach(button => {
+            button.addEventListener('click', function() {
+                const nextTab = this.getAttribute('data-next');
+                document.querySelector(`.tab[data-tab="${nextTab}"]`).click();
+            });
+        });
+        
+        document.querySelectorAll('.prev-tab').forEach(button => {
+            button.addEventListener('click', function() {
+                const prevTab = this.getAttribute('data-prev');
+                document.querySelector(`.tab[data-tab="${prevTab}"]`).click();
+            });
+        });
+
+        // Photo upload functionality
+        photoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.type.match('image.*')) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        uploadedPhoto = e.target.result;
+                        photoPreview.src = uploadedPhoto;
+                        photoPreview.style.display = 'block';
+                        photoLabel.textContent = 'Photo uploaded successfully! Click to change';
+                        photoLabel.classList.add('has-file');
+                        generatePreview();
+                        updateProgress();
+                    };
+                    
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('Please select a valid image file (JPG or PNG)');
+                    photoInput.value = '';
+                }
+            }
+        });
+
+        // Add education, experience, and project sections
+        document.getElementById('add-education').addEventListener('click', function() {
+            const container = document.getElementById('education-container');
+            const newItem = document.createElement('div');
+            newItem.className = 'education-item';
+            newItem.innerHTML = `
+                <div class="form-group">
+                    <label>Institute Name</label>
+                    <input type="text" class="institute">
+                </div>
+                <div class="form-group">
+                    <label>Degree</label>
+                    <input type="text" class="degree">
+                </div>
+                <div class="form-group">
+                    <label>Year</label>
+                    <input type="text" class="year">
+                </div>
+                <div class="form-group">
+                    <label>Grade/GPA</label>
+                    <input type="text" class="grade">
+                </div>
+                <button type="button" class="btn remove-btn">Remove</button>
+            `;
+            container.appendChild(newItem);
+            
+            // Add remove functionality
+            newItem.querySelector('.remove-btn').addEventListener('click', function() {
+                container.removeChild(newItem);
+                generatePreview();
+                updateProgress();
+            });
+            
+            // Add input listeners for live preview
+            const inputs = newItem.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    generatePreview();
+                    updateProgress();
+                });
+            });
+        });
+        
+        document.getElementById('add-experience').addEventListener('click', function() {
+            const container = document.getElementById('experience-container');
+            const newItem = document.createElement('div');
+            newItem.className = 'experience-item';
+            newItem.innerHTML = `
+                <div class="form-group">
+                    <label>Company Name</label>
+                    <input type="text" class="company">
+                </div>
+                <div class="form-group">
+                    <label>Job Duration</label>
+                    <input type="text" class="job-duration" placeholder="e.g., Jan 2020 - Present">
+                </div>
+                <div class="form-group">
+                    <label>Job Responsibilities (one per line)</label>
+                    <textarea class="responsibilities-text"></textarea>
+                </div>
+                <button type="button" class="btn remove-btn">Remove</button>
+            `;
+            container.appendChild(newItem);
+            
+            // Add remove functionality
+            newItem.querySelector('.remove-btn').addEventListener('click', function() {
+                container.removeChild(newItem);
+                generatePreview();
+                updateProgress();
+            });
+            
+            // Add input listeners for live preview
+            const inputs = newItem.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    generatePreview();
+                    updateProgress();
+                });
+            });
+        });
+        
+        document.getElementById('add-project').addEventListener('click', function() {
+            const container = document.getElementById('projects-container');
+            const newItem = document.createElement('div');
+            newItem.className = 'project-item';
+            newItem.innerHTML = `
+                <div class="form-group">
+                    <label>Project/Publication Name</label>
+                    <input type="text" class="project-name">
+                </div>
+                <div class="form-group">
+                    <label>Description (one point per line)</label>
+                    <textarea class="project-description"></textarea>
+                </div>
+                <button type="button" class="btn remove-btn">Remove</button>
+            `;
+            container.appendChild(newItem);
+            
+            // Add remove functionality
+            newItem.querySelector('.remove-btn').addEventListener('click', function() {
+                container.removeChild(newItem);
+                generatePreview();
+                updateProgress();
+            });
+            
+            // Add input listeners for live preview
+            const inputs = newItem.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    generatePreview();
+                    updateProgress();
+                });
+            });
+        });
+
+        // Add input listeners for live preview to all form elements
+        document.querySelectorAll('#portfolio-form input, #portfolio-form textarea').forEach(element => {
+            element.addEventListener('input', function() {
+                generatePreview();
+                updateProgress();
+            });
+        });
+
+        // Generate portfolio preview
+        function generatePreview() {
+            const preview = document.getElementById('portfolio-preview');
+            
+            // Personal Information
+            const fullName = document.getElementById('full-name').value || 'Your Name';
+            const emailContact = document.getElementById('email-contact').value || 'your.email@example.com';
+            const phone = document.getElementById('phone').value || 'Not provided';
+            const linkedin = document.getElementById('linkedin').value || 'Not provided';
+            const bio = document.getElementById('bio').value || 'Your bio will appear here. Write a short introduction about yourself, your professional background, and career goals.';
+            
+            // Skills
+            const softSkills = document.getElementById('soft-skills').value.split(',').map(skill => skill.trim()).filter(skill => skill);
+            const technicalSkills = document.getElementById('technical-skills').value.split(',').map(skill => skill.trim()).filter(skill => skill);
+            
+            // Education
+            const educationItems = document.querySelectorAll('.education-item');
+            let educationHTML = '';
+            educationItems.forEach(item => {
+                const institute = item.querySelector('.institute').value;
+                const degree = item.querySelector('.degree').value;
+                const year = item.querySelector('.year').value;
+                const grade = item.querySelector('.grade').value;
+                
+                if (institute || degree) {
+                    educationHTML += `
+                        <div class="education-item">
+                            <div class="education-header">
+                                <div class="institute">${institute || 'Institute Name'}</div>
+                                <div class="year">${year || 'Year'}</div>
+                            </div>
+                            <div class="degree">${degree || 'Degree'}</div>
+                            <div class="grade">Grade: ${grade || 'Not specified'}</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            // Experience
+            const experienceItems = document.querySelectorAll('.experience-item');
+            let experienceHTML = '';
+            experienceItems.forEach(item => {
+                const company = item.querySelector('.company').value;
+                const jobDuration = item.querySelector('.job-duration').value;
+                const responsibilities = item.querySelector('.responsibilities-text').value.split('\n').filter(resp => resp.trim());
+                
+                if (company || jobDuration) {
+                    let responsibilitiesHTML = '';
+                    if (responsibilities.length > 0) {
+                        responsibilitiesHTML = '<ul class="responsibilities">';
+                        responsibilities.forEach(resp => {
+                            responsibilitiesHTML += `<li>${resp}</li>`;
+                        });
+                        responsibilitiesHTML += '</ul>';
+                    }
+                    
+                    experienceHTML += `
+                        <div class="experience-item">
+                            <div class="experience-header">
+                                <div class="company">${company || 'Company Name'}</div>
+                                <div class="duration">${jobDuration || 'Duration'}</div>
+                            </div>
+                            ${responsibilitiesHTML}
+                        </div>
+                    `;
+                }
+            });
+            
+            // Projects
+            const projectItems = document.querySelectorAll('.project-item');
+            let projectsHTML = '';
+            projectItems.forEach(item => {
+                const projectName = item.querySelector('.project-name').value;
+                const description = item.querySelector('.project-description').value.split('\n').filter(desc => desc.trim());
+                
+                if (projectName || description.length > 0) {
+                    let descriptionHTML = '';
+                    if (description.length > 0) {
+                        descriptionHTML = '<ul class="description">';
+                        description.forEach(desc => {
+                            descriptionHTML += `<li>${desc}</li>`;
+                        });
+                        descriptionHTML += '</ul>';
+                    }
+                    
+                    projectsHTML += `
+                        <div class="project-item">
+                            <div class="project-header">
+                                <div class="project-name">${projectName || 'Project Name'}</div>
+                            </div>
+                            ${descriptionHTML}
+                        </div>
+                    `;
+                }
+            });
+            
+            // Build the preview
+            preview.innerHTML = `
+                <div class="portfolio-header">
+                    <img src="${uploadedPhoto || 'https://via.placeholder.com/150'}" alt="Profile Photo" class="profile-picture">
+                    <div class="profile-info">
+                        <h2>${fullName}</h2>
+                        <p>${bio}</p>
+                        <p><strong>Email:</strong> ${emailContact}</p>
+                        <p><strong>Phone:</strong> ${phone}</p>
+                        <p><strong>LinkedIn:</strong> ${linkedin}</p>
+                    </div>
+                </div>
+                
+                ${softSkills.length > 0 || technicalSkills.length > 0 ? `
+                <div class="section">
+                    <h3>Skills</h3>
+                    ${softSkills.length > 0 ? `
+                    <div class="skill-category">
+                        <h4>Soft Skills</h4>
+                        <div class="skills-container">
+                            ${softSkills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${technicalSkills.length > 0 ? `
+                    <div class="skill-category">
+                        <h4>Technical Skills</h4>
+                        <div class="skills-container">
+                            ${technicalSkills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+                ` : (softSkills.length === 0 && technicalSkills.length === 0 ? `
+                <div class="section">
+                    <h3>Skills</h3>
+                    <p>Add your skills in the Skills tab to see them here.</p>
+                </div>
+                ` : '')}
+                
+                ${educationHTML ? `
+                <div class="section">
+                    <h3>Education</h3>
+                    ${educationHTML}
+                </div>
+                ` : `
+                <div class="section">
+                    <h3>Education</h3>
+                    <p>Add your education details in the Education tab to see them here.</p>
+                </div>
+                `}
+                
+                ${experienceHTML ? `
+                <div class="section">
+                    <h3>Work Experience</h3>
+                    ${experienceHTML}
+                </div>
+                ` : `
+                <div class="section">
+                    <h3>Work Experience</h3>
+                    <p>Add your work experience in the Experience tab to see them here.</p>
+                </div>
+                `}
+                
+                ${projectsHTML ? `
+                <div class="section">
+                    <h3>Projects & Publications</h3>
+                    ${projectsHTML}
+                </div>
+                ` : `
+                <div class="section">
+                    <h3>Projects & Publications</h3>
+                    <p>Add your projects or publications in the Projects tab to see them here.</p>
+                </div>
+                `}
+            `;
+        }
+
+        // Generate PDF (placeholder)
+        document.getElementById('generate-pdf').addEventListener('click', function() {
+            alert('Portfolio generated! In a real application, this would create a PDF file.');
+        });
+
+        // Print functionality
+        document.getElementById('print-portfolio').addEventListener('click', function() {
+            window.print();
+        });
+
+        // Initialize preview and progress
+        generatePreview();
+        updateProgress();
+    </script>
+</body>
+</html>
